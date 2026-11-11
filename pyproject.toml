@@ -1,7 +1,7 @@
 [project]
 name = "br-econ-lakehouse"
 version = "0.1.0"
-description = "ipeline de dados de indicadores econômicos do Banco Central"
+description = "Pipeline de dados de indicadores econômicos do Banco Central"
 readme = "README.md"
 authors = [
     { name = "Samuel", email = "samuel.batistela12@gmail.com" }
@@ -9,8 +9,6 @@ authors = [
 requires-python = ">=3.12"
 dependencies = []
 
-[project.scripts]
-br-econ-lakehouse = "br_econ_lakehouse:main"
 
 [build-system]
 requires = ["uv_build>=0.13.7,<0.14.0"]
