@@ -9,7 +9,7 @@ from itertools import pairwise
 
 import pytest
 
-from br_econ_lakehouse.ingestion.windows import split_date_range
+from br_econ_lakehouse.ingestion.windows import add_years, split_date_range
 
 
 def _assert_contiguous(start: date, end: date, windows: list[tuple[date, date]]) -> None:
@@ -70,7 +70,7 @@ def test_nenhuma_janela_excede_max_years():
     start, end = date(1999, 7, 15), date(2024, 3, 3)
 
     for w_start, w_end in split_date_range(start, end, max_years=3):
-        limite = w_start.replace(year=w_start.year + 3)
+        limite = add_years(w_start, 3)
         assert w_end < limite
 
 
@@ -83,3 +83,15 @@ def test_start_igual_end_retorna_janela_de_um_dia():
     dia = date(2024, 3, 15)
 
     assert split_date_range(dia, dia) == [(dia, dia)]
+
+
+def test_add_years_data_comum():
+    assert add_years(date(2020, 7, 15), 3) == date(2023, 7, 15)
+
+
+def test_add_years_29_fev_para_ano_bissexto_mantem_29():
+    assert add_years(date(2020, 2, 29), 4) == date(2024, 2, 29)
+
+
+def test_add_years_29_fev_para_ano_nao_bissexto_vira_28():
+    assert add_years(date(2020, 2, 29), 3) == date(2023, 2, 28)
