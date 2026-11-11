@@ -9,7 +9,7 @@ from itertools import pairwise
 
 import pytest
 
-from br_econ_lakehouse.ingestion.windows import split_date_range
+from br_econ_lakehouse.ingestion.windows import add_years, split_date_range
 
 
 def _assert_contiguous(start: date, end: date, windows: list[tuple[date, date]]) -> None:
@@ -46,7 +46,7 @@ def test_sete_anos_com_max_tres_gera_tres_janelas():
     ("start", "end", "max_years"),
     [
         (date(2018, 1, 1), date(2024, 12, 31), 3),
-        (date(1999, 7, 15), date(2024, 3, 3), 3),   # datas "quebradas"
+        (date(1999, 7, 15), date(2024, 3, 3), 3),  # datas "quebradas"
         (date(2015, 2, 28), date(2025, 2, 28), 2),  # atravessa anos bissextos
         (date(2000, 1, 1), date(2029, 12, 31), 10),  # limite real da SGS
     ],
@@ -70,7 +70,7 @@ def test_nenhuma_janela_excede_max_years():
     start, end = date(1999, 7, 15), date(2024, 3, 3)
 
     for w_start, w_end in split_date_range(start, end, max_years=3):
-        limite = w_start.replace(year=w_start.year + 3)
+        limite = add_years(w_start, 3)
         assert w_end < limite
 
 
@@ -83,3 +83,31 @@ def test_start_igual_end_retorna_janela_de_um_dia():
     dia = date(2024, 3, 15)
 
     assert split_date_range(dia, dia) == [(dia, dia)]
+
+
+def test_add_years_data_comum():
+    assert add_years(date(2020, 7, 15), 3) == date(2023, 7, 15)
+
+
+def test_add_years_29_fev_para_ano_bissexto_mantem_29():
+    assert add_years(date(2020, 2, 29), 4) == date(2024, 2, 29)
+
+
+def test_add_years_29_fev_para_ano_nao_bissexto_vira_28():
+    assert add_years(date(2020, 2, 29), 3) == date(2023, 2, 28)
+
+
+def test_janela_comecando_em_29_fev():
+    windows = split_date_range(date(2020, 2, 29), date(2026, 12, 31), max_years=3)
+
+    assert windows == [
+        (date(2020, 2, 29), date(2023, 2, 27)),
+        (date(2023, 2, 28), date(2026, 2, 27)),
+        (date(2026, 2, 28), date(2026, 12, 31)),
+    ]
+
+
+@pytest.mark.parametrize("max_years", [0, -1])
+def test_max_years_invalido_levanta_value_error(max_years):
+    with pytest.raises(ValueError):
+        split_date_range(date(2020, 1, 1), date(2024, 1, 1), max_years=max_years)
