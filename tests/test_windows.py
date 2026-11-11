@@ -95,3 +95,19 @@ def test_add_years_29_fev_para_ano_bissexto_mantem_29():
 
 def test_add_years_29_fev_para_ano_nao_bissexto_vira_28():
     assert add_years(date(2020, 2, 29), 3) == date(2023, 2, 28)
+
+
+def test_janela_comecando_em_29_fev():
+    windows = split_date_range(date(2020, 2, 29), date(2026, 12, 31), max_years=3)
+
+    assert windows == [
+        (date(2020, 2, 29), date(2023, 2, 27)),
+        (date(2023, 2, 28), date(2026, 2, 27)),
+        (date(2026, 2, 28), date(2026, 12, 31)),
+    ]
+
+
+@pytest.mark.parametrize("max_years", [0, -1])
+def test_max_years_invalido_levanta_value_error(max_years):
+    with pytest.raises(ValueError):
+        split_date_range(date(2020, 1, 1), date(2024, 1, 1), max_years=max_years)
