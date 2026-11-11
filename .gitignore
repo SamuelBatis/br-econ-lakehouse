@@ -2,7 +2,7 @@
 __pycache__/
 *.py[codz]
 *$py.class
-
+*.pyc
 # C extensions
 *.so
 
@@ -221,3 +221,5 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+# Dados locais do pipeline
+data/

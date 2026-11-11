@@ -46,7 +46,7 @@ def test_sete_anos_com_max_tres_gera_tres_janelas():
     ("start", "end", "max_years"),
     [
         (date(2018, 1, 1), date(2024, 12, 31), 3),
-        (date(1999, 7, 15), date(2024, 3, 3), 3),   # datas "quebradas"
+        (date(1999, 7, 15), date(2024, 3, 3), 3),  # datas "quebradas"
         (date(2015, 2, 28), date(2025, 2, 28), 2),  # atravessa anos bissextos
         (date(2000, 1, 1), date(2029, 12, 31), 10),  # limite real da SGS
     ],
