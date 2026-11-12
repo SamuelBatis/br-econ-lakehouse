@@ -35,9 +35,9 @@ class SGSClient:
         }
         try:
             response = self._client.get(f"/bcdata.sgs.{series_code}/dados", params=params)
-        except httpx.TimeoutException as exc:
+        except httpx.TransportError as exc:
             raise TransientSGSError(
-                f"Timeout ao buscar série {series_code} ({start} a {end})"
+                f"Falha de rede ao buscar série {series_code} ({start} a {end}): {exc}"
             ) from exc
 
         if _is_no_data(response):

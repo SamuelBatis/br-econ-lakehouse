@@ -119,3 +119,11 @@ def test_timeout_levanta_transient_error(client):
 
     with pytest.raises(TransientSGSError):
         client.fetch(1, *FEV_2024)
+
+
+@respx.mock
+def test_falha_de_conexao_levanta_transient_error(client):
+    respx.get(DOLAR_URL).mock(side_effect=httpx.ConnectError("connection refused"))
+
+    with pytest.raises(TransientSGSError):
+        client.fetch(1, *FEV_2024)
