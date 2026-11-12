@@ -37,6 +37,8 @@ data/            # saída local (no .gitignore)
 - Séries diárias de mercado (ex.: código 1, dólar) só têm dias úteis: buracos são esperados.
 - Séries mensais (ex.: 433, IPCA) usam `01/MM/aaaa` como mês de referência; o dado é publicado
   semanas depois. Data de referência ≠ data de disponibilidade.
+- Período sem dados → HTTP 404 com JSON contendo "Value(s) not found" (tratar como lista vazia).
+- Série inexistente → HTTP 404 com texto puro "A serie nao existe!" (erro de configuração, falhar).
 
 ## Convenções de código
 - TDD: escrever/ajustar o teste ANTES da implementação.
@@ -52,5 +54,3 @@ data/            # saída local (no .gitignore)
 - Trabalhe em passos pequenos e mostre os testes antes da implementação.
 - Não edite a seção "Decisões de design" do README: ela é escrita pelo Samuel.
 - Ao tomar uma decisão de design não óbvia, explique a alternativa descartada.
-- Período sem dados → HTTP 404 com JSON contendo "Value(s) not found" (tratar como lista vazia).
-- Série inexistente → HTTP 404 com texto puro "A serie nao existe!" (erro de configuração, falhar).

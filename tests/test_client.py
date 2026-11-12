@@ -7,6 +7,11 @@ import pytest
 import respx
 
 from br_econ_lakehouse.ingestion.client import SGSClient
+from br_econ_lakehouse.ingestion.exceptions import (
+    SeriesNotFoundError,
+    SGSRequestError,
+    TransientSGSError,
+)
 
 BASE_URL = "https://api.bcb.gov.br/dados/serie"
 DOLAR_URL = f"{BASE_URL}/bcdata.sgs.1/dados"
@@ -66,9 +71,51 @@ def test_periodo_sem_dados_404_value_not_found_retorna_lista_vazia(client):
 
 
 @respx.mock
-def test_serie_inexistente_404_texto_levanta_erro(client):
+def test_serie_inexistente_levanta_series_not_found_com_codigo_na_mensagem(client):
     url = f"{BASE_URL}/bcdata.sgs.999999/dados"
     respx.get(url).mock(return_value=httpx.Response(404, text="A serie nao existe!"))
 
-    with pytest.raises(httpx.HTTPStatusError):
+    with pytest.raises(SeriesNotFoundError, match="999999"):
         client.fetch(999999, *FEV_2024)
+
+
+@respx.mock
+def test_http_406_levanta_sgs_request_error(client):
+    respx.get(DOLAR_URL).mock(return_value=httpx.Response(406))
+
+    with pytest.raises(SGSRequestError):
+        client.fetch(1, *FEV_2024)
+
+
+@respx.mock
+def test_404_sem_mensagem_conhecida_levanta_sgs_request_error(client):
+    # Ex.: base_url errada. Não é "série inexistente" nem "sem dados".
+    respx.get(DOLAR_URL).mock(return_value=httpx.Response(404, text="Not Found"))
+
+    with pytest.raises(SGSRequestError):
+        client.fetch(1, *FEV_2024)
+
+
+@respx.mock
+@pytest.mark.parametrize("status", [500, 503])
+def test_http_5xx_levanta_transient_error(client, status):
+    respx.get(DOLAR_URL).mock(return_value=httpx.Response(status))
+
+    with pytest.raises(TransientSGSError):
+        client.fetch(1, *FEV_2024)
+
+
+@respx.mock
+def test_http_429_levanta_transient_error(client):
+    respx.get(DOLAR_URL).mock(return_value=httpx.Response(429))
+
+    with pytest.raises(TransientSGSError):
+        client.fetch(1, *FEV_2024)
+
+
+@respx.mock
+def test_timeout_levanta_transient_error(client):
+    respx.get(DOLAR_URL).mock(side_effect=httpx.ReadTimeout("timeout"))
+
+    with pytest.raises(TransientSGSError):
+        client.fetch(1, *FEV_2024)
