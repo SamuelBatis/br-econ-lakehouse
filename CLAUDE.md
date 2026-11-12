@@ -52,3 +52,5 @@ data/            # saída local (no .gitignore)
 - Trabalhe em passos pequenos e mostre os testes antes da implementação.
 - Não edite a seção "Decisões de design" do README: ela é escrita pelo Samuel.
 - Ao tomar uma decisão de design não óbvia, explique a alternativa descartada.
+- Período sem dados → HTTP 404 com JSON contendo "Value(s) not found" (tratar como lista vazia).
+- Série inexistente → HTTP 404 com texto puro "A serie nao existe!" (erro de configuração, falhar).
