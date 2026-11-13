@@ -12,7 +12,7 @@ uv run pytest -v
 
 ## Status
 - [x] Fatiamento de períodos em janelas (limite de 10 anos da API SGS)
-- [ ] Cliente HTTP com retry
+- [x] Cliente HTTP com retry
 - [ ] Parse e validação dos registros
 - [ ] Watermark e carga incremental
 - [ ] Camada bronze
