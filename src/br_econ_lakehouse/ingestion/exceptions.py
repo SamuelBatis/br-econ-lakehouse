@@ -15,3 +15,7 @@ class SGSRequestError(SGSError):
 
 class TransientSGSError(SGSError):
     """Erro temporário: timeout, 5xx, 429 (vale tentar de novo)."""
+
+
+class InvalidRecordError(ValueError):
+    """Registro da API com formato inválido (problema do dado, não da comunicação)."""
