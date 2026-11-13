@@ -21,7 +21,7 @@ def parse_record(raw: dict[str, str], series_code: int) -> Observation:
     try:
         ref_date = _parse_date(raw["data"])
         value = _parse_value(raw["valor"])
-    except (KeyError, ValueError) as exc:
+    except (KeyError, ValueError, TypeError) as exc:
         raise InvalidRecordError(
             f"Registro inválido da série {series_code}: {raw!r} ({_reason(exc)})"
         ) from exc

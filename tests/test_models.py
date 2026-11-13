@@ -31,6 +31,7 @@ INVALID_RECORDS = [
     pytest.param({"data": "02/01/2024", "valor": "abc"}, id="valor-nao-numerico"),
     pytest.param({"data": "02/01/2024", "valor": "NaN"}, id="valor-nan"),
     pytest.param({"data": "02/01/2024", "valor": "Infinity"}, id="valor-infinito"),
+    pytest.param({"data": "02/01/2024", "valor": None}, id="valor-null"),
     pytest.param({"data": "02/01/2024"}, id="sem-valor"),
     pytest.param({"valor": "4.85"}, id="sem-data"),
 ]
